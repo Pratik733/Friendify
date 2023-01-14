@@ -62,7 +62,8 @@ const Form = () => {
       formData.append(value, values[value]);
     }
     formData.append("picturePath", values.picture.name);
-
+    formData.delete('picture');
+    console.log(typeof values.picture.name);
     const savedUserResponse = await fetch(
       `${process.env.REACT_APP_BACKEND_API_KEY}/auth/register`,
       {

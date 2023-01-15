@@ -20,7 +20,7 @@ const AdvertWidget = () => {
         width="100%"
         height="auto"
         alt="advert"
-        src={`${process.env.REACT_APP_BACKEND_API_KEY}/assets/info4.jpeg`}
+        src="https://firebasestorage.googleapis.com/v0/b/friendify-96472.appspot.com/o/images%2Finfo4.jpeg?alt=media&token=eedc29a6-ac7a-4566-9bf8-71f88e9b558f"
         style={{ borderRadius: "0.75rem", margin: "0.75rem 0" }}
       />
       <FlexBetween>

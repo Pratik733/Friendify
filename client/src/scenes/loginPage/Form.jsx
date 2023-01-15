@@ -15,6 +15,9 @@ import { useDispatch } from "react-redux";
 import { setLogin } from "state";
 import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
+import handleUpload from "scenes/UploadImage";
+import { getDownloadURL } from "firebase/storage";
+
 
 const registerSchema = yup.object().shape({
   firstName: yup.string().required("required"),
@@ -63,21 +66,45 @@ const Form = () => {
     }
     formData.append("picturePath", values.picture.name);
     formData.delete('picture');
-    console.log(typeof values.picture.name);
-    const savedUserResponse = await fetch(
-      `${process.env.REACT_APP_BACKEND_API_KEY}/auth/register`,
-      {
-        method: "POST",
-        body: formData,
+    console.log(values.picturePath);
+    const upload = handleUpload(values.picture)
+    upload.on(
+      "state_changed",
+      (snapshot) => {
+        const uploaded = Math.floor(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        console.log(uploaded);
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+       getDownloadURL(upload.snapshot.ref).then((url) => {
+          console.log(url)
+          formData.set("picturePath", url);
+          saveData(formData);
+        });
       }
     );
-    const savedUser = await savedUserResponse.json();
-    onSubmitProps.resetForm();
+    // console.log(url);
+    const saveData = async () =>{
 
-    if (savedUser) {
-      setPageType("login");
+      const savedUserResponse = await fetch(
+        `${process.env.REACT_APP_BACKEND_API_KEY}/auth/register`,
+        {
+          method: "POST",
+          body: formData,
+        }
+        );
+        const savedUser = await savedUserResponse.json();
+        onSubmitProps.resetForm();
+        
+        if (savedUser) {
+          setPageType("login");
+        }
+      };
     }
-  };
 
   const login = async (values, onSubmitProps) => {
     const loggedInResponse = await fetch(`${process.env.REACT_APP_BACKEND_API_KEY}/auth/login`, {
